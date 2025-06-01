@@ -3,8 +3,10 @@
 {{ define "title" }}{{ .TargetUser.Username }}'s Account - {{ .App.Config.ApplicationName }}{{ end }}
 
 {{ define "content" }}
-  <h1 class="text-center font-bold text-xl">{{ .TargetUser.Username }}</h1>
+<div class="flex flex-col gap-4">
+  <!--<h1 class="text-center font-bold text-xl">{{ .TargetUser.Username }}</h1>-->
 
+  <!-- ignore this -->
   <div style="display: none">
     {{ range $player := .TargetUser.Players }}
       <form
@@ -33,53 +35,20 @@
       </form>
     {{ end }}
   </div>
+  <!-- ignoring done -->
 
-  <h3>{{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}Your{{ end }} Minecraft Player</h3>
+  <h3 class="text-2xl font-bold">{{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}Your{{ end }} Minecraft Profile</h3>
   {{ if .TargetUser.Players }}
-    <table>
-      <tbody>
-        {{ range $player := .TargetUser.Players }}
-          <tr>
-            <td style="width: 30px">
-              <div
-                class="list-profile-picture"
-                {{ with $playerSkinURL := PlayerSkinURL $player }}
-                  {{ if $playerSkinURL }}
-                    style="background-image: url({{ $playerSkinURL }});"
-                  {{ end }}
-                {{ end }}
-              ></div>
-            </td>
-            <td>
-              <a
-                href="{{ $.App.FrontEndURL }}/web/player/{{ $player.UUID }}"
-                >{{ $player.Name }}</a
-              >
-            </td>
-            <td>{{ $player.UUID }}</td>
-            {{ if or $.App.Config.AllowAddingDeletingPlayers $.User.IsAdmin }}
-              <td>
-                <input type="submit" form="delete-{{ $player.UUID }}" value="Delete" />
-              </td>
-            {{ end }}
-          </tr>
-        {{ end }}
-      </tbody>
-    </table>
+    {{ range $player := .TargetUser.Players }}
+      <a href="{{ $.App.FrontEndURL }}/web/player/{{ $player.UUID }}">
+        <button class="bg-violet-600 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed">
+          Profile
+        </button>
+      </a>
+    {{ end }}
   {{ else }}
     No players yet.
   {{ end }}
-  <p>
-    {{ if or (and (not .User.IsAdmin) (not .App.Config.AllowAddingDeletingPlayers)) (eq .MaxPlayerCount 0) }}
-      {{ if .AdminView }}{{ .TargetUser.Username }} is{{ else }}You are{{ end }} not allowed to create new players.
-      {{ if .AdminView }}You can override this limit since you're an admin.{{ end }}
-    {{ else if (gt .MaxPlayerCount 0) }}
-      {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}Your{{ end }} account can have up to {{ .MaxPlayerCount }} player(s).
-      {{ if .AdminView }}You can override this limit since you're an admin.{{ end }}
-    {{ else }}
-      {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}Your{{ end }} account can have an unlimited number of players.
-    {{ end }}
-  </p>
   {{ if or (and .App.Config.AllowAddingDeletingPlayers (or (lt (len .TargetUser.Players) .MaxPlayerCount) (lt .MaxPlayerCount 0))) .User.IsAdmin }}
     {{ if .App.Config.CreateNewPlayer.Allow }}
       {{ if or .User.IsAdmin .App.Config.CreateNewPlayer.AllowChoosingUUID }}
@@ -152,7 +121,7 @@
   {{ end }}
 
   {{ if gt (len .App.OIDCProvidersByName) 0 }}
-    <h3>Linked accounts</h3>
+    <h3 class="text-2xl font-bold">Linked Accounts</h3>
     {{ if gt (len $.LinkedOIDCProviderNames) 0 }}
       <p>
         These external accounts are linked to {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}your{{ end }} {{ .App.Config.ApplicationName }} account:
@@ -176,70 +145,58 @@
       </table>
     {{ else }}
       <p>
-        Astrality is not linked to {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}your{{ end }} {{ .App.Config.ApplicationName }} account. <span class="warning-message">If you link with an Astrality account, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Elysium Launcher.</span>
+        Astrality is not linked to {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}your{{ end }} {{ .App.Config.ApplicationName }} account.
+        <br>
+        <span class="text-yellow-300">If you link with an Astrality account,
+        you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password.
+        <br>
+        You'll need to use your Minecraft Token to log in to Elysium Launcher.</span>
       </p>
     {{ end }}
     {{ if and (eq .User.UUID .TargetUser.UUID) (gt (len $.UnlinkedOIDCProviders) 0) }}
       {{ range $provider := $.UnlinkedOIDCProviders }}
-          <p>
-            <a href="{{ $provider.AuthURL }}">Link with {{ $provider.Name }}</a></td>
-          </p>
+        <a href="{{ $provider.AuthURL }}">
+          <button class="bg-neutral-800 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed">
+            <img src="https://assets.astrality.party/brand/astrality/astrality-logo.png" class="h-8">
+            Link with {{ $provider.Name }}
+          </button>
+        </a>
       {{ end }}
     {{ end }}
   {{ end }}
 
   <h3 class="font-bold text-2xl">Elysium Account settings</h3>
   <form action="{{ .App.FrontEndURL }}/web/update-user" method="post" enctype="multipart/form-data">
-    {{ if and .User.IsAdmin (not .TargetUser.IsAdmin) }}
-      <p>
-          <label for="max-player-count">Max number of players</label><br>
-          <small>Specify -1 to allow unlimited players or leave blank to reset to the configured default value.</small><br>
-          <input
-            name="maxPlayerCount"
-            type="number"
-            {{ if .TargetUser.IsAdmin }}disabled{{ end }}
-            value="{{ if or .TargetUser.IsAdmin (eq .TargetUser.MaxPlayerCount $.App.Constants.MaxPlayerCountUnlimited) }}-1{{ else if eq .TargetUser.MaxPlayerCount $.App.Constants.MaxPlayerCountUseDefault}}{{ else }}{{ .TargetUser.MaxPlayerCount }}{{ end }}"
-            placeholder="{{ .App.Config.DefaultMaxPlayerCount }}"
-            min="-1">
-          </input>
-      </p>
-    {{ end }}
-    {{ if and .App.Config.AllowPasswordLogin (eq (len $.LinkedOIDCProviderNames) 0) }}
-      <p>
-        <label for="password">Password</label><br />
-        <input type="password" name="password" id="password" class="bg-neutral-800 px-4 py-2 rounded" placeholder="Leave blank to keep" />
-      </p>
-    {{ end }}
-    <p>
-      <label for="minecraftToken">Minecraft Token</label><br>
-      <small>Can be used instead of a password to sign in to Minecraft launchers.</small><br>
-      <input type="text" name="minecraftToken" id="minecraft-token" class="bg-neutral-800 px-4 py-2 rounded" readonly value="{{ .TargetUser.MinecraftToken }}" />
-      <br>
-      <label for="reset-minecraft-token"> check the box to reset your Minecraft token
-      </label>
-      <input type="checkbox" name="resetMinecraftToken" id="reset-minecraft-token" />
-    </p>
-    <p>
-      <label for="preferred-language">Preferred Language (used by Minecraft)</label><br />
-      <select name="preferredLanguage" id="preferred-language" value="{{ .TargetUser.PreferredLanguage }}"></select>
-    </p>
-    <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
-    <input hidden name="returnUrl" value="{{ .URL }}" />
+    <div class="flex flex-col gap-4 mb-4">
+      {{ if and .App.Config.AllowPasswordLogin (eq (len $.LinkedOIDCProviderNames) 0) }}
+        <p>
+          <label for="password">Password</label><br />
+          <input type="password" name="password" id="password" class="bg-neutral-800 px-4 py-2 rounded" placeholder="Leave blank to keep" />
+        </p>
+      {{ end }}
+      <div class="flex flex-col gap-1">
+        <label for="minecraftToken" class="font-bold text-xl">Minecraft Token</label>
+        <small class="text-neutral-300 italic">Can be used instead of a password to sign in to Minecraft launchers.</small>
+        <input type="text" name="minecraftToken" id="minecraft-token" class="bg-neutral-800 p-2 rounded" readonly value="{{ .TargetUser.MinecraftToken }}" />
+        <label for="reset-minecraft-token">
+          <input type="checkbox" name="resetMinecraftToken" id="reset-minecraft-token" />
+          Reset Token
+        </label>
+      </div>
+      <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
+      <input hidden name="returnUrl" value="{{ .URL }}" />
+    </div>
     <input class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" type="submit" value="Save changes" />
   </form>
-  <p>
-    <form action="{{ .App.FrontEndURL }}/web/delete-user" method="post" onsubmit="return confirm('Are you sure? This action is irreversible.');">
-      <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
-      <input hidden name="returnUrl" value="{{ if .AdminView }}
-          {{ .App.FrontEndURL }}/web/admin
-        {{ else }}
-          {{ .App.FrontEndURL }}
-        {{ end }}"
-      />
-      <input type="submit" class="bg-red-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" value="Delete Account" />
-      </form>
+  <form class="md:self-end" action="{{ .App.FrontEndURL }}/web/delete-user" method="post" onsubmit="return confirm('Are you sure? This action is irreversible.');">
+    <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
+    <input hidden name="returnUrl" value="{{ if .AdminView }}
+        {{ .App.FrontEndURL }}/web/admin
+      {{ else }}
+        {{ .App.FrontEndURL }}
+      {{ end }}"
+    />
+    <input type="submit" class="bg-red-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" value="Delete Account" />
   </p>
-
-  {{ template "footer" . }}
-
+</div>
 {{ end }}

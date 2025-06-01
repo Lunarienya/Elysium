@@ -21,10 +21,12 @@
       <title>{{ block "title" . }}{{ end }}</title>
     </head>
     <body>
-      <!--{{ template "header" . }}-->
       <main>
-        <div class="max-w-screen-xl flex flex-nowrap flex-col mx-auto px-4 space-y-5">
-          {{ block "content" . }}{{ end }}
+        <div class="min-h-screen flex flex-col">
+          {{ template "header" . }}
+          <div class="flex-1 h-full flex flex-nowrap flex-col p-4 space-y-5 items-center justify-center">
+            {{ block "content" . }}{{ end }}
+          </div>
         </div>
       </main>
       <!--{{ template "footer" . }}-->

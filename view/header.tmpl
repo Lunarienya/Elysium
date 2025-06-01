@@ -1,34 +1,48 @@
 {{ define "header" }}
-  <nav class="header-nav">
-    <div>
-      <a class="logo" href="{{ .App.FrontEndURL }}">
-        <img
-          src="{{ .App.PublicURL }}/logo.svg"
-          alt="{{ .App.Config.ApplicationName }} logo"
-        />{{ .App.Config.ApplicationName }}
-      </a>
-    </div>
-    <div style="text-align: right">
+<nav class="py-4 px-8">
+  <div class="flex flex-wrap justify-between items-center relative">
+    <a href="{{ .App.FrontEndURL }}" class="flex items-center gap-2 font-bold text-2xl">
+      <img src="{{ .App.PublicURL }}/logo.svg" alt="{{ .App.Config.ApplicationName }} logo" class="h-12" />{{ .App.Config.ApplicationName }}
+    </a>
+
+    <label for="mobile-menu-toggle" class="md:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 cursor-pointer z-20">
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </label>
+
+    <input type="checkbox" id="mobile-menu-toggle" class="hidden peer">
+
+    <div id="mobile-menu" class="hidden peer-checked:flex peer-checked:flex-col md:flex md:flex-row items-center gap-4 absolute top-full left-0 w-full md:relative md:w-auto bg-neutral-900 rounded md:bg-transparent shadow-lg md:shadow-none p-4 md:p-0 z-10
+    ">
       {{ if .User }}
         {{ if .User.IsAdmin }}
-          <a href="{{ .App.FrontEndURL }}/web/admin">Admin</a>
+          <a href="{{ .App.FrontEndURL }}/web/admin">
+            <button class="bg-neutral-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto">
+              Admin
+            </button>
+          </a>
         {{ end }}
-        <a href="{{ .App.FrontEndURL }}/web/user"
-          >{{ .User.Username }}'s&nbsp;account</a
-        >
-        <form
-          style="display: inline"
-          action="{{ .App.FrontEndURL }}/web/logout"
-          method="post"
-        >
-          <input type="submit" value="Log out" />
+        <a href="{{ .App.FrontEndURL }}/web/user">
+          <button class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto">
+            Profile
+          </button>
+          </a>
+        <form style="display: inline" action="{{ .App.FrontEndURL }}/web/logout" method="post">
+          <input type="submit" class="bg-neutral-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto" value="Log Out" />
         </form>
       {{ else }}
-        <a href="{{ .App.FrontEndURL }}/web/registration">Register</a>
+        <a href="{{ .App.FrontEndURL }}/web/registration">
+          <button class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed w-full md:w-auto">
+            Sign In
+          </button>
+        </a>
       {{ end }}
     </div>
-  </nav>
+  </div>
+</nav>
 
+<!--
   {{ if .ErrorMessage }}
     <p class="error-message">{{ .ErrorMessage }}</p>
   {{ end }}
@@ -38,4 +52,5 @@
   {{ if .WarningMessage }}
     <p class="warning-message">{{ .WarningMessage }}</p>
   {{ end }}
+  -->
 {{ end }}
