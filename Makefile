@@ -12,7 +12,7 @@ swag:
 
 prebuild: npm-install
 	node esbuild.config.js
-	npx @tailwindcss/cli -o ./static/tailwind.css
+	npx @tailwindcss/cli -o ./public/style.css
 
 build: prebuild
 	export GOFLAGS='-buildmode=pie'

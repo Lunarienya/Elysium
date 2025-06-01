@@ -36,7 +36,7 @@
     </div>
     </img>
   </div>
-  {{ if .App.Config.AllowPasswordLogin }}
+  {{ if and .App.Config.AllowPasswordLogin (not .User)}}
     <hr>
     <div class="flex flex-col items-center justify-center gap-4 mb-4">
       <h2 class="font-bold text-2xl">Legacy Login</h2>
