@@ -3,10 +3,7 @@
 {{ define "title" }}{{ .TargetUser.Username }}'s Account - {{ .App.Config.ApplicationName }}{{ end }}
 
 {{ define "content" }}
-
-  {{ template "header" . }}
-
-  <h1 style="text-align: center;">{{ .TargetUser.Username }}</h1>
+  <h1 class="text-center font-bold text-xl">{{ .TargetUser.Username }}</h1>
 
   <div style="display: none">
     {{ range $player := .TargetUser.Players }}
@@ -37,18 +34,9 @@
     {{ end }}
   </div>
 
-  <h3>{{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}Your{{ end }} players</h3>
+  <h3>{{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}Your{{ end }} Minecraft Player</h3>
   {{ if .TargetUser.Players }}
     <table>
-      <thead>
-        <tr>
-          <td colspan="2">Player</td>
-          <td>UUID</td>
-          {{ if or .App.Config.AllowAddingDeletingPlayers .User.IsAdmin }}
-            <td>Delete&nbsp;Player</td>
-          {{ end }}
-        </tr>
-      </thead>
       <tbody>
         {{ range $player := .TargetUser.Players }}
           <tr>
@@ -188,7 +176,7 @@
       </table>
     {{ else }}
       <p>
-        No external accounts are linked to {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}your{{ end }} {{ .App.Config.ApplicationName }} account. <span class="warning-message">If you link an external account, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Minecraft launchers.</span>
+        Astrality is not linked to {{ if .AdminView }}{{ .TargetUser.Username }}'s{{ else }}your{{ end }} {{ .App.Config.ApplicationName }} account. <span class="warning-message">If you link with an Astrality account, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Elysium Launcher.</span>
       </p>
     {{ end }}
     {{ if and (eq .User.UUID .TargetUser.UUID) (gt (len $.UnlinkedOIDCProviders) 0) }}
@@ -200,12 +188,8 @@
     {{ end }}
   {{ end }}
 
-  <h3>Account settings</h3>
-  <form
-    action="{{ .App.FrontEndURL }}/web/update-user"
-    method="post"
-    enctype="multipart/form-data"
-  >
+  <h3 class="font-bold text-2xl">Elysium Account settings</h3>
+  <form action="{{ .App.FrontEndURL }}/web/update-user" method="post" enctype="multipart/form-data">
     {{ if and .User.IsAdmin (not .TargetUser.IsAdmin) }}
       <p>
           <label for="max-player-count">Max number of players</label><br>
@@ -223,365 +207,37 @@
     {{ if and .App.Config.AllowPasswordLogin (eq (len $.LinkedOIDCProviderNames) 0) }}
       <p>
         <label for="password">Password</label><br />
-        <input
-          type="password"
-          name="password"
-          id="password"
-          class="long"
-          placeholder="Leave blank to keep"
-        />
+        <input type="password" name="password" id="password" class="bg-neutral-800 px-4 py-2 rounded" placeholder="Leave blank to keep" />
       </p>
     {{ end }}
     <p>
       <label for="minecraftToken">Minecraft Token</label><br>
       <small>Can be used instead of a password to sign in to Minecraft launchers.</small><br>
-      <input
-        type="text"
-        name="minecraftToken"
-        id="minecraft-token"
-        class="long"
-        readonly
-        value="{{ .TargetUser.MinecraftToken }}"
-      />
+      <input type="text" name="minecraftToken" id="minecraft-token" class="bg-neutral-800 px-4 py-2 rounded" readonly value="{{ .TargetUser.MinecraftToken }}" />
       <br>
-      <label for="reset-minecraft-token"
-        >check the box to reset your Minecraft token
+      <label for="reset-minecraft-token"> check the box to reset your Minecraft token
       </label>
       <input type="checkbox" name="resetMinecraftToken" id="reset-minecraft-token" />
     </p>
     <p>
-      <label for="apiToken">API Token</label><br />
-      {{ if ne .App.Constants.SwaggerUIURL  "" }}
-        <small>See the <a href="{{ .App.Constants.SwaggerUIURL }}/?url={{ .App.APIURL }}/swagger.json">{{ .App.Config.ApplicationName }} API documentation</a>.</small><br />
-      {{ end }}
-      <input
-        type="text"
-        name="apiToken"
-        id="api-token"
-        class="long"
-        readonly
-        value="{{ .TargetUser.APIToken }}"
-      />
-      <br />
-      <label for="reset-api-token"
-        >check the box to reset your API token
-      </label>
-      <input type="checkbox" name="resetApiToken" id="reset-api-token" />
-    </p>
-    <p>
-      <label for="preferred-language"
-        >Preferred Language (used by Minecraft)</label
-      ><br />
-      <select
-        name="preferredLanguage"
-        id="preferred-language"
-        value="{{ .TargetUser.PreferredLanguage }}"
-      >
-        <option
-          value="sq"
-          {{ if eq .TargetUser.PreferredLanguage "sq" }}selected{{ end }}
-        >
-          Albanian
-        </option>
-        <option
-          value="ar"
-          {{ if eq .TargetUser.PreferredLanguage "ar" }}selected{{ end }}
-        >
-          Arabic
-        </option>
-        <option
-          value="be"
-          {{ if eq .TargetUser.PreferredLanguage "be" }}selected{{ end }}
-        >
-          Belarusian
-        </option>
-        <option
-          value="bg"
-          {{ if eq .TargetUser.PreferredLanguage "bg" }}selected{{ end }}
-        >
-          Bulgarian
-        </option>
-        <option
-          value="ca"
-          {{ if eq .TargetUser.PreferredLanguage "ca" }}selected{{ end }}
-        >
-          Catalan
-        </option>
-        <option
-          value="zh"
-          {{ if eq .TargetUser.PreferredLanguage "zh" }}selected{{ end }}
-        >
-          Chinese
-        </option>
-        <option
-          value="hr"
-          {{ if eq .TargetUser.PreferredLanguage "hr" }}selected{{ end }}
-        >
-          Croatian
-        </option>
-        <option
-          value="cs"
-          {{ if eq .TargetUser.PreferredLanguage "cs" }}selected{{ end }}
-        >
-          Czech
-        </option>
-        <option
-          value="da"
-          {{ if eq .TargetUser.PreferredLanguage "da" }}selected{{ end }}
-        >
-          Danish
-        </option>
-        <option
-          value="nl"
-          {{ if eq .TargetUser.PreferredLanguage "nl" }}selected{{ end }}
-        >
-          Dutch
-        </option>
-        <option
-          value="en"
-          {{ if eq .TargetUser.PreferredLanguage "en" }}selected{{ end }}
-        >
-          English
-        </option>
-        <option
-          value="et"
-          {{ if eq .TargetUser.PreferredLanguage "et" }}selected{{ end }}
-        >
-          Estonian
-        </option>
-        <option
-          value="fi"
-          {{ if eq .TargetUser.PreferredLanguage "fi" }}selected{{ end }}
-        >
-          Finnish
-        </option>
-        <option
-          value="fr"
-          {{ if eq .TargetUser.PreferredLanguage "fr" }}selected{{ end }}
-        >
-          French
-        </option>
-        <option
-          value="de"
-          {{ if eq .TargetUser.PreferredLanguage "de" }}selected{{ end }}
-        >
-          German
-        </option>
-        <option
-          value="el"
-          {{ if eq .TargetUser.PreferredLanguage "el" }}selected{{ end }}
-        >
-          Greek
-        </option>
-        <option
-          value="iw"
-          {{ if eq .TargetUser.PreferredLanguage "iw" }}selected{{ end }}
-        >
-          Hebrew
-        </option>
-        <option
-          value="hi"
-          {{ if eq .TargetUser.PreferredLanguage "hi" }}selected{{ end }}
-        >
-          Hindi
-        </option>
-        <option
-          value="hu"
-          {{ if eq .TargetUser.PreferredLanguage "hu" }}selected{{ end }}
-        >
-          Hungarian
-        </option>
-        <option
-          value="is"
-          {{ if eq .TargetUser.PreferredLanguage "is" }}selected{{ end }}
-        >
-          Icelandic
-        </option>
-        <option
-          value="in"
-          {{ if eq .TargetUser.PreferredLanguage "in" }}selected{{ end }}
-        >
-          Indonesian
-        </option>
-        <option
-          value="ga"
-          {{ if eq .TargetUser.PreferredLanguage "ga" }}selected{{ end }}
-        >
-          Irish
-        </option>
-        <option
-          value="it"
-          {{ if eq .TargetUser.PreferredLanguage "it" }}selected{{ end }}
-        >
-          Italian
-        </option>
-        <option
-          value="ja"
-          {{ if eq .TargetUser.PreferredLanguage "ja" }}selected{{ end }}
-        >
-          Japanese
-        </option>
-        <option
-          value="ko"
-          {{ if eq .TargetUser.PreferredLanguage "ko" }}selected{{ end }}
-        >
-          Korean
-        </option>
-        <option
-          value="lv"
-          {{ if eq .TargetUser.PreferredLanguage "lv" }}selected{{ end }}
-        >
-          Latvian
-        </option>
-        <option
-          value="lt"
-          {{ if eq .TargetUser.PreferredLanguage "lt" }}selected{{ end }}
-        >
-          Lithuanian
-        </option>
-        <option
-          value="mk"
-          {{ if eq .TargetUser.PreferredLanguage "mk" }}selected{{ end }}
-        >
-          Macedonian
-        </option>
-        <option
-          value="ms"
-          {{ if eq .TargetUser.PreferredLanguage "ms" }}selected{{ end }}
-        >
-          Malay
-        </option>
-        <option
-          value="mt"
-          {{ if eq .TargetUser.PreferredLanguage "mt" }}selected{{ end }}
-        >
-          Maltese
-        </option>
-        <option
-          value="no"
-          {{ if eq .TargetUser.PreferredLanguage "no" }}selected{{ end }}
-        >
-          Norwegian
-        </option>
-        <option
-          value="nb"
-          {{ if eq .TargetUser.PreferredLanguage "nb" }}selected{{ end }}
-        >
-          Norwegian Bokmål
-        </option>
-        <option
-          value="nn"
-          {{ if eq .TargetUser.PreferredLanguage "nn" }}selected{{ end }}
-        >
-          Norwegian Nynorsk
-        </option>
-        <option
-          value="pl"
-          {{ if eq .TargetUser.PreferredLanguage "pl" }}selected{{ end }}
-        >
-          Polish
-        </option>
-        <option
-          value="pt"
-          {{ if eq .TargetUser.PreferredLanguage "pt" }}selected{{ end }}
-        >
-          Portuguese
-        </option>
-        <option
-          value="ro"
-          {{ if eq .TargetUser.PreferredLanguage "ro" }}selected{{ end }}
-        >
-          Romanian
-        </option>
-        <option
-          value="ru"
-          {{ if eq .TargetUser.PreferredLanguage "ru" }}selected{{ end }}
-        >
-          Russian
-        </option>
-        <option
-          value="sr"
-          {{ if eq .TargetUser.PreferredLanguage "sr" }}selected{{ end }}
-        >
-          Serbian
-        </option>
-        <option
-          value="sk"
-          {{ if eq .TargetUser.PreferredLanguage "sk" }}selected{{ end }}
-        >
-          Slovak
-        </option>
-        <option
-          value="sl"
-          {{ if eq .TargetUser.PreferredLanguage "sl" }}selected{{ end }}
-        >
-          Slovenian
-        </option>
-        <option
-          value="es"
-          {{ if eq .TargetUser.PreferredLanguage "es" }}selected{{ end }}
-        >
-          Spanish
-        </option>
-        <option
-          value="sv"
-          {{ if eq .TargetUser.PreferredLanguage "sv" }}selected{{ end }}
-        >
-          Swedish
-        </option>
-        <option
-          value="th"
-          {{ if eq .TargetUser.PreferredLanguage "th" }}selected{{ end }}
-        >
-          Thai
-        </option>
-        <option
-          value="tr"
-          {{ if eq .TargetUser.PreferredLanguage "tr" }}selected{{ end }}
-        >
-          Turkish
-        </option>
-        <option
-          value="uk"
-          {{ if eq .TargetUser.PreferredLanguage "uk" }}selected{{ end }}
-        >
-          Ukrainian
-        </option>
-        <option
-          value="vi"
-          {{ if eq .TargetUser.PreferredLanguage "vi" }}selected{{ end }}
-        >
-          Vietnamese
-        </option>
-      </select>
+      <label for="preferred-language">Preferred Language (used by Minecraft)</label><br />
+      <select name="preferredLanguage" id="preferred-language" value="{{ .TargetUser.PreferredLanguage }}"></select>
     </p>
     <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
     <input hidden name="returnUrl" value="{{ .URL }}" />
-    <p style="text-align: center;">
-      <input type="submit" value="Save changes" />
-    </p>
+    <input class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" type="submit" value="Save changes" />
   </form>
   <p>
-    <details>
-      <summary>Delete Account</summary>
-      <form
-        action="{{ .App.FrontEndURL }}/web/delete-user"
-        method="post"
-        onsubmit="return confirm('Are you sure? This action is irreversible.');"
-      >
-        <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
-        <input
-          hidden
-          name="returnUrl"
-          value="{{ if .AdminView }}
-            {{ .App.FrontEndURL }}/web/admin
-          {{ else }}
-            {{ .App.FrontEndURL }}
-          {{ end }}"
-        />
-        <input type="submit" value="Delete Account" />
+    <form action="{{ .App.FrontEndURL }}/web/delete-user" method="post" onsubmit="return confirm('Are you sure? This action is irreversible.');">
+      <input hidden name="uuid" value="{{ .TargetUser.UUID }}" />
+      <input hidden name="returnUrl" value="{{ if .AdminView }}
+          {{ .App.FrontEndURL }}/web/admin
+        {{ else }}
+          {{ .App.FrontEndURL }}
+        {{ end }}"
+      />
+      <input type="submit" class="bg-red-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" value="Delete Account" />
       </form>
-    </details>
   </p>
 
   {{ template "footer" . }}
