@@ -25,4 +25,4 @@ COPY --from=builder /usr/bin/drasl /usr/bin/drasl
 RUN mkdir -p /usr/share/drasl
 COPY --from=builder /usr/share/drasl /usr/share/drasl
 
-CMD ["/usr/bin/drasl"
+CMD ["/usr/bin/drasl"]
