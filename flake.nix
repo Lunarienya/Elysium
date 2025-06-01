@@ -69,7 +69,7 @@
 
       buildOCIImage = pkgs:
         pkgs.dockerTools.buildLayeredImage {
-          name = "sammyette/elysium";
+          name = "unmojang/drasl";
           contents = with pkgs; [cacert];
           config.Cmd = ["${buildDrasl pkgs}/bin/drasl"];
         };
