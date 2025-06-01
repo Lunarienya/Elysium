@@ -1,0 +1,19 @@
+name: Docker
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build and push
+        uses: mr-smithers-excellent/docker-build-push@v6
+        with:
+          tags: latest
+          registry: ghcr.io
+          image: Lunarienya/Elysium
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}

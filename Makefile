@@ -10,10 +10,11 @@ npm-install:
 swag:
 	$(SWAG) init --generalInfo api.go --output ./assets/ --outputTypes json
 
-prebuild: npm-install swag
+prebuild: npm-install
 	node esbuild.config.js
+	npx @tailwindcss/cli -o ./static/tailwind.css
 
-build:
+build: prebuild
 	export GOFLAGS='-buildmode=pie'
 	export CGO_CPPFLAGS="-D_FORTIFY_SOURCE=3"
 	export CGO_LDFLAGS="-Wl,-z,relro,-z,now"
