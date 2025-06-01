@@ -1,13 +1,13 @@
 {{ define "base" }}
   <!doctype html>
-  <html lang="en">
+  <html lang="en" class="dark bg-white dark:bg-neutral-950 text-white">
     <head>
       <meta charset="utf-8" />
       <meta http-equiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="minimum-scale=1, width=device-width, initial-scale=1.0" />
       <meta
         name="description"
-        content="A self-hosted API server for Minecraft"
+        content="Minecraft Authentication server for Lunarie, Astrality's Minecraft server."
       />
       <link rel="icon" href="{{ .App.PublicURL }}/icon.png" />
       <link
@@ -21,21 +21,13 @@
       <title>{{ block "title" . }}{{ end }}</title>
     </head>
     <body>
-      <div id="background"></div>
-      <main id="content">
-        {{ block "content" . }}{{ end }}
+      <!--{{ template "header" . }}-->
+      <main>
+        <div class="max-w-screen-xl flex flex-nowrap flex-col mx-auto px-4 space-y-5">
+          {{ block "content" . }}{{ end }}
+        </div>
       </main>
-      <script type="module">
-        for (const el of document.querySelectorAll(".noscript-hidden")) {
-          el.classList.remove("noscript-hidden");
-        }
-      </script>
-      {{ if .App.Config.EnableBackgroundEffect }}
-        <script type="module">
-          import { background } from "{{.App.PublicURL}}/bundle.js";
-          background(document.querySelector("#background"));
-        </script>
-      {{ end }}
+      <!--{{ template "footer" . }}-->
     </body>
   </html>
 {{ end }}

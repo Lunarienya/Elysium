@@ -3,175 +3,48 @@
 {{ define "title" }}{{ .App.Config.ApplicationName }}{{ end }}
 
 {{ define "content" }}
-  {{ template "header" . }}
-  <h3>Log in</h3>
-
-  {{ $dividerNeeded := false }}
-
-  {{ if gt (len .WebOIDCProviders) 0 }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
-    <h3><img class="openid-logo" src="{{ .App.PublicURL }}/openid-logo.svg" alt="OpenID logo"></h3>
-    {{ range $provider := $.WebOIDCProviders }}
-        <p>
-          <a href="{{ $provider.AuthURL }}">Sign in with {{ $provider.Name }}</a>
+  <div class="flex flex-row h-screen items-center justify-evenly">
+    <img src="https://assets.astrality.party/brand/elysium/elysium-leaf.svg" class="w-1/3">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-4">
+        <h1 class="font-bold text-7xl">Elysium</h1>
+        <p>Minecraft Authentication server for Lunarie, Astrality's Minecraft server.
+        <br>
+        Elysium manages your Minecraft account profile, which includes skin, cape, and username.
         </p>
-    {{ end }}
-    {{ $dividerNeeded = true }}
-  {{ end }}
-
+      </div>
+      <div class="flex flex-row gap-2">
+        {{ if .User }}
+          <button class="bg-neutral-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed">
+          Profile
+          </button>
+        {{ else }}
+          {{ if gt (len .WebOIDCProviders) 0 }}
+            {{ range $provider := $.WebOIDCProviders }}
+              <a href="{{ $provider.AuthURL }}">
+                <button class="bg-neutral-800 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed">
+                  <img src="https://assets.astrality.party/brand/astrality/astrality-logo.png" class="h-8">
+                  Sign in with {{ $provider.Name }}
+                </button>
+              </a>
+            {{ end }}
+          {{ end }}
+        {{ end}}
+      </div>
+    </div>
+    </img>
+  </div>
   {{ if .App.Config.AllowPasswordLogin }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
-    <form action="{{ .App.FrontEndURL }}/web/login" method="post">
-      <input type="text" name="username" placeholder="Username" required />
-      <input hidden name="returnUrl" value="{{ .URL }}" />
-      <input hidden name="destination" value="{{ .Destination }}" />
-      <input
-        class="long"
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-      />
-      <input type="submit" value="Log in" />
-    </form>
-    {{ $dividerNeeded = true }}
+    <hr>
+    <div class="flex flex-col items-center justify-center gap-4 mb-4">
+      <h2 class="font-bold text-2xl">Legacy Login</h2>
+      <form action="{{ .App.FrontEndURL }}/web/login" method="post" class="flex flex-col gap-4">
+        <input class="bg-neutral-800 px-4 py-2 rounded" type="text" name="username" placeholder="Username" required />
+        <input class="bg-neutral-800 px-4 py-2 rounded" type="password" name="password" placeholder="Password" required />
+        <input type="submit" value="Log in" class="bg-violet-600 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed"/>
+        <input hidden name="destination" value="{{ .Destination }}" />
+        <input hidden name="returnUrl" value="{{ .URL }}" />
+      </form>
+    </div>
   {{ end }}
-
-  <h3>Configuring your client</h3>
-  <p>
-    Using {{ .App.Config.ApplicationName }} on the client requires a third-party launcher that supports
-    custom API servers.
-    <a href="https://github.com/unmojang/FjordLauncher">Fjord Launcher</a>, a
-    fork of Prism Launcher, is recommended, but
-    <a href="https://github.com/huanghongxun/HMCL">HMCL</a> also works. Both are
-    free/libre.
-  </p>
-
-  <h4>Fjord Launcher</h4>
-
-  <ol>
-    <li>
-      Click your account in the top right and select "Manage Accounts...".
-    </li>
-    <li>Click "Add authlib-injector" in the right-hand sidebar.</li>
-    <li>
-      Enter your player name and your {{ .App.Config.ApplicationName }} password or Minecraft Token, and use
-      <a href="{{ .App.AuthlibInjectorURL }}">{{ .App.AuthlibInjectorURL }}</a>
-      for the URL. Click "OK".
-    </li>
-  </ol>
-
-  <h4>HMCL</h4>
-
-  <ol>
-    <li>
-      Go to the "Account List" view by clicking the account at the top of the
-      sidebar.
-    </li>
-    <li>
-      At the bottom left, click "New Auth Server" and enter
-      <a href="{{ .App.AuthlibInjectorURL }}">{{ .App.AuthlibInjectorURL }}</a>.
-      Click "Next" and then "Finish".
-    </li>
-    <li>
-      In the sidebar, click the newly-added authentication server, labeled
-      "{{ .App.Config.InstanceName }}". Enter your {{ .App.Config.ApplicationName }} player name and password
-      and click "Login".
-    </li>
-  </ol>
-
-  <h4>Other Launchers</h4>
-
-  <p>
-    Use the authlib-injector URL
-    <a href="{{ .App.AuthlibInjectorURL }}">{{ .App.AuthlibInjectorURL }}</a>.
-  </p>
-
-  <p>
-    Or, if your launcher supports custom API servers but not via
-    authlib-injector, use the following URLs:
-  </p>
-
-  <table>
-    <tr>
-      <td>Authentication Server:</td>
-      <td>{{ .App.AuthURL }}</td>
-    </tr>
-    <tr>
-      <td>Account Server:</td>
-      <td>{{ .App.AccountURL }}</td>
-    </tr>
-    <tr>
-      <td>Session Server:</td>
-      <td>{{ .App.SessionURL }}</td>
-    </tr>
-    <tr>
-      <td>Services Server:</td>
-      <td>{{ .App.ServicesURL }}</td>
-    </tr>
-  </table>
-
-  <h3>Configuring your server</h3>
-
-  <h4>Minecraft 1.16 and later</h4>
-
-  On recent versions of Minecraft, you can use {{ .App.Config.ApplicationName }} on an unmodified Vanilla
-  server. To do so, add the following arguments before you specify the jar file
-  when you start the server:
-  <pre style="word-wrap: break-word; white-space: pre-wrap; overflow-x: auto">
--Dminecraft.api.env=custom
--Dminecraft.api.auth.host={{ .App.AuthURL }}
--Dminecraft.api.account.host={{ .App.AccountURL }}
--Dminecraft.api.session.host={{ .App.SessionURL }}
--Dminecraft.api.services.host={{ .App.ServicesURL }}</pre>
-
-  For example, the full command you use to start the server might be:
-  <pre style="word-wrap: break-word; white-space: pre-wrap; overflow-x: auto">
-java -Xmx1024M -Xms1024M \
-    -Dminecraft.api.env=custom \
-    -Dminecraft.api.auth.host={{ .App.AuthURL }} \
-    -Dminecraft.api.account.host={{ .App.AccountURL }} \
-    -Dminecraft.api.session.host={{ .App.SessionURL }} \
-    -Dminecraft.api.services.host={{ .App.ServicesURL }} \
-    -jar server.jar nogui</pre>
-
-  <h4>Minecraft 1.7.2 through 1.15.2</h4>
-
-  <p>
-    Refer to the authlib-injector documentation on setting up a server:
-    <a
-      href="https://github.com/yushijinhun/authlib-injector/blob/develop/README.en.md#deploy"
-      >https://github.com/yushijinhun/authlib-injector/blob/develop/README.en.md#deploy</a
-    >.
-  </p>
-
-  <p>
-    Alternatively, you can patch your server to use a newer version of Mojang's authlib that supports the arguments for custom API servers. Replace the files under <code>com/mojang/authlib</code> in your <code>server.jar</code> with the files in <a href="https://libraries.minecraft.net/com/mojang/authlib/1.6.25/authlib-1.6.25.jar">authlib-1.6.25.jar</a>.
-  </p>
-
-  <h4><a href="https://minecraft.wiki/w/Java_Edition_Late_Classic">Late Classic</a>, Alpha, Beta, etc. through Minecraft 1.6.4</h4>
-
-  <p>
-    Use <a href="https://github.com/craftycodie/OnlineModeFix">OnlineModeFix</a> and start the server with the <code>-Dminecraft.api.*.host</code> arguments described above. For example, the full command you use to start the server might be:
-
-    <pre style="word-wrap: break-word; white-space: pre-wrap; overflow-x: auto">
-java -Xmx1024M -Xms1024M \
-    -Dminecraft.api.env=custom \
-    -Dminecraft.api.auth.host={{ .App.AuthURL }} \
-    -Dminecraft.api.account.host={{ .App.AccountURL }} \
-    -Dminecraft.api.session.host={{ .App.SessionURL }} \
-    -Dminecraft.api.services.host={{ .App.ServicesURL }} \
-    -Djava.protocol.handler.pkgs=gg.codie.mineonline.protocol \
-    -cp server.jar:OnlineModeFix.jar \
-    net.minecraft.server.MinecraftServer \
-    nogui</pre>
-  </p>
-
-  {{ template "footer" . }}
 {{ end }}

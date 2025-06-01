@@ -1,34 +1,36 @@
 {{ template "layout" . }}
 
-{{ define "title" }}Register - {{ .App.Config.ApplicationName }}{{ end }}
+{{ define "title" }}Register • {{ .App.Config.ApplicationName }}{{ end }}
 
-{{ define
-  "content"
-}}
-  {{ template "header" . }}
-
+{{ define "content" }}
   {{ $dividerNeeded := false }}
-
-  <!-- Sign in with OpenID -->
-  {{ if gt (len .WebOIDCProviders) 0 }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
-    <h3><img class="openid-logo" src="{{ .App.PublicURL }}/openid-logo.svg" alt="OpenID logo"></h3>
-    {{ range $provider := $.WebOIDCProviders }}
-      {{ if and $provider.RequireInvite (not $.InviteCode) }}
-        Signing in with {{ $provider.Name }} is invite-only.
-      {{ else }}
-        <p>
-          <a href="{{ $provider.AuthURL }}">Sign in with {{ $provider.Name }}</a>
-        </p>
+  
+  <div class="flex flex-col h-screen items-center justify-center">
+    <img src="https://assets.astrality.party/brand/elysium/elysium-leaf.svg" class="h-1/3">
+    <!-- Sign in with OpenID -->
+    {{ if gt (len .WebOIDCProviders) 0 }}
+      {{ if $dividerNeeded }}
+        <div class="divider">or</div>
+        {{ $dividerNeeded = false }}
       {{ end }}
+      {{ range $provider := $.WebOIDCProviders }}
+        {{ if and $provider.RequireInvite (not $.InviteCode) }}
+          You need an invite to sign in.
+        {{ else }}
+          <a href="{{ $provider.AuthURL }}">
+          <button class="bg-neutral-700 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed">
+              <img src="https://assets.astrality.party/brand/astrality/astrality-logo.png" class="h-8">
+              Sign in with {{ $provider.Name }}
+            </button>
+          </a>
+        {{ end }}
+      {{ end }}
+      {{ $dividerNeeded = true }}
     {{ end }}
-    {{ $dividerNeeded = true }}
-  {{ end }}
+  </div>
 
   <!-- RegistrationNewPlayer -->
+  <!--
   {{ if and .App.Config.RegistrationNewPlayer.Allow .App.Config.AllowPasswordLogin }}
     {{ if $dividerNeeded }}
       <div class="divider">or</div>
@@ -88,82 +90,5 @@
     {{ end }}
     {{ $dividerNeeded = true }}
   {{ end }}
-
-  <!-- RegistrationExistingPlayer -->
-  {{ if and .App.Config.RegistrationExistingPlayer.Allow .App.Config.AllowPasswordLogin }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
-    <h3>Register from an existing Minecraft player</h3>
-    {{ if and .App.Config.RegistrationExistingPlayer.RequireInvite (not
-      .InviteCode)
-    }}
-      <p>Registration as an existing player is invite-only.</p>
-    {{ else }}
-      {{ if .App.Config.ImportExistingPlayer.RequireSkinVerification }}
-        <p>
-          Register a new account with the UUID of an existing
-          {{ .App.Config.ImportExistingPlayer.Nickname }} account.
-          Requires verification that you own the account.
-        </p>
-        {{ if .InviteCode }}
-          <p><em>Using invite code {{ .InviteCode }}</em></p>
-        {{ end }}
-        <form action="{{ .App.FrontEndURL }}/web/register-challenge" method="get">
-          <input
-            type="text"
-            name="playerName"
-            placeholder="{{ .App.Config.ImportExistingPlayer.Nickname }} Player name"
-            maxlength="{{ .App.Constants.MaxUsernameLength }}"
-            required
-          />
-          <input
-            type="text"
-            name="inviteCode"
-            value="{{ .InviteCode }}"
-            hidden
-          />
-          <input hidden name="returnUrl" value="{{ .URL }}" />
-          <input type="submit" value="Continue" />
-        </form>
-      {{ else }}
-        <p>
-          Register a new account with the UUID of an existing
-          {{ .App.Config.ImportExistingPlayer.Nickname }} account.
-        </p>
-        <form action="{{ .App.FrontEndURL }}/web/register" method="post">
-          <input
-            type="text"
-            name="playerName"
-            placeholder="{{ .App.Config.ImportExistingPlayer.Nickname }} Player name"
-            maxlength="{{ .App.Constants.MaxUsernameLength }}"
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            minlength="{{ .App.Config.MinPasswordLength }}"
-            class="long"
-            required
-          />
-          <input type="checkbox" name="existingPlayer" checked hidden />
-          <input
-            type="text"
-            name="inviteCode"
-            value="{{ .InviteCode }}"
-            hidden
-          />
-          {{ if .InviteCode }}
-            <p><em>Using invite code {{ .InviteCode }}</em></p>
-          {{ end }}
-          <input type="submit" value="Register" />
-        </form>
-      {{ end }}
-    {{ end }}
-    {{ $dividerNeeded = true }}
-  {{ end }}
-
-  {{ template "footer" . }}
+  -->
 {{ end }}

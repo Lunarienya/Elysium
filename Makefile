@@ -13,7 +13,7 @@ swag:
 prebuild: npm-install swag
 	node esbuild.config.js
 
-build: prebuild
+build:
 	export GOFLAGS='-buildmode=pie'
 	export CGO_CPPFLAGS="-D_FORTIFY_SOURCE=3"
 	export CGO_LDFLAGS="-Wl,-z,relro,-z,now"

@@ -5,7 +5,8 @@
     "@mapbox/mapbox-gl-supported": "^3.0.0",
     "esbuild": "^0.25.1",
     "esbuild-plugin-inline-image": "^0.0.8",
-    "skinview3d": "^3.0.0-alpha.1"
+    "skinview3d": "^3.0.0-alpha.1",
+    "tailwindcss": "^4.1.8"
   },
   "type": "module",
   "devDependencies": {

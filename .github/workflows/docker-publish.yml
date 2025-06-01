@@ -26,7 +26,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: unmojang/drasl
+          images: sammyette/elysium
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
@@ -40,13 +40,13 @@ jobs:
         run: |
           echo "$DOCKERHUB_TOKEN" | buildah login -u "$DOCKERHUB_USERNAME" --password-stdin docker.io
 
-          buildah manifest create drasl
+          buildah manifest create elysium
 
           for system in 'x86_64-linux' 'aarch64-linux'; do
             oci_archive="$(nix build --no-link --print-out-paths ".#oci-cross-$system")"
-            buildah manifest add drasl "docker-archive:$oci_archive"
+            buildah manifest add elysium "docker-archive:$oci_archive"
           done
 
           for reference in $REFERENCES; do
-            buildah manifest push --all -f v2s2 drasl "docker://$reference"
+            buildah manifest push --all -f v2s2 elysium "docker://$reference"
           done
