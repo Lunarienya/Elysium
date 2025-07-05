@@ -5,100 +5,45 @@
 {{ define
   "content"
 }}
-  {{ template "header" . }}
-
-  {{ $dividerNeeded := false }}
-
-  {{ if .AnyUnmigratedUsers }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
-    <h3>Migrate an existing user</h3>
-
-    <p>You can link this identity provider to an existing {{ .App.Config.ApplicationName }} account. <span class="warning-message">If you do so, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Minecraft launchers.</span></p>
-
-    <form action="{{ .App.FrontEndURL }}/web/oidc-migrate" method="post">
-      <input type="text" name="username" placeholder="Username" required />
-      <input hidden name="returnUrl" value="{{ .URL }}" />
-      <input
-        class="long"
-        type="password"
-        name="password"
-        placeholder="Password"
-        required
-      />
-      <input type="submit" value="Link account" />
-    </form>
-    {{ $dividerNeeded := true }}
-  {{ end }}
-
+<div class="flex flex-col gap-4">
   <!-- CreateNewPlayer -->
   {{ if .App.Config.CreateNewPlayer.Allow }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
-    <h3>Create a player</h3>
-    {{ if .App.Config.CreateNewPlayer.AllowChoosingUUID }}
-      <p>Complete registration by creating a new player:</p>
-    {{ else }}
-      <p>Complete registration by creating a new player with a random UUID:</p>
-    {{ end }}
-    <form action="{{ .App.FrontEndURL }}/web/register" method="post">
-      <input
-        required
-        type="text"
-        name="playerName"
-        placeholder="Player name"
-        maxlength="{{ .App.Constants.MaxUsernameLength }}"
-        value="{{ .PreferredPlayerName }}"
-        {{ if not .AllowChoosingPlayerName }}
+    <h3 class="text-2xl font-bold">Create a player</h3>
+    <p>Complete registration by creating a new player:</p>
+    <form class="flex flex-col gap-2" action="{{ .App.FrontEndURL }}/web/register" method="post">
+      <input required class="bg-neutral-800 p-2 rounded" type="text" name="playerName" id="player-name" placeholder="Player Name" value="{{ .PreferredPlayerName }}" {{ if not .AllowChoosingPlayerName }}
           title="Choosing a player name is not allowed."
           disabled
-        {{ end }}
-      />
-      <input
-        type="text"
-        name="email"
-        placeholder="Leave this blank"
-        class="honeypot"
-      />
-      <input
-        hidden
-        type="checkbox"
-        name="useIdToken"
-        checked
-      />
+        {{ end }} />
+      <input type="text" name="email" placeholder="Leave this blank" class="honeypot hidden"/>
+      <input hidden type="checkbox" name="useIdToken" checked />
       {{ if .App.Config.CreateNewPlayer.AllowChoosingUUID }}
-        <p>
-          <input
-            class="long"
-            type="text"
-            name="uuid"
-            placeholder="Player UUID (leave blank for random)"
-            pattern="^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$"
-          />
-        </p>
+        <input class="bg-neutral-800 p-2 rounded" type="text" name="uuid" placeholder="Player UUID (leave blank for random)" pattern="^[0-9a-f]{8}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{4}-?[0-9a-f]{12}$" />
       {{ end }}
       <input type="text" name="inviteCode" value="{{ .InviteCode }}" hidden />
       <input hidden name="returnUrl" value="{{ .URL }}" />
       {{ if .InviteCode }}
-        <p><em>Using invite code {{ .InviteCode }}</em></p>
+        <small class="text-neutral-300 italic">Using invite code {{ .InviteCode }}</small>
       {{ end }}
-      <p>
-        <input type="submit" value="Register" />
-      </p>
+      <input type="submit" value="Register" class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" />
     </form>
-    {{ $dividerNeeded = true }}
+  {{ end }}
+
+  {{ if .AnyUnmigratedUsers }}
+    <h3 class="text-2xl font-bold">Migrate an existing profile</h3>
+
+    <p>You can link your Astrality account to an existing {{ .App.Config.ApplicationName }} profile. <span class="text-yellow-300">If you do so, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Minecraft launchers.</span></p>
+e
+    <form class="flex flex-col gap-3" action="{{ .App.FrontEndURL }}/web/oidc-migrate" method="post">
+      <input class="bg-neutral-800 p-2 rounded" type="text" name="username" placeholder="Username" required />
+      <input hidden name="returnUrl" value="{{ .URL }}" />
+      <input class="bg-neutral-800 p-2 rounded" type="password" name="password" placeholder="Password" required />
+      <input type="submit" value="Link account" class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" />
+    </form>
   {{ end }}
 
   <!-- ImportExistingPlayer -->
   {{ if .App.Config.ImportExistingPlayer.Allow }}
-    {{ if $dividerNeeded }}
-      <div class="divider">or</div>
-      {{ $dividerNeeded = false }}
-    {{ end }}
     <h3>Register from an existing Minecraft player</h3>
     {{ if and .App.Config.RegistrationExistingPlayer.RequireInvite (not
       .InviteCode)
@@ -175,8 +120,6 @@
         </form>
       {{ end }}
     {{ end }}
-    {{ $dividerNeeded = true }}
   {{ end }}
-
-  {{ template "footer" . }}
+  </div>
 {{ end }}
