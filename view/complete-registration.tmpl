@@ -33,7 +33,7 @@
     <h3 class="text-2xl font-bold">Migrate an existing profile</h3>
 
     <p>You can link your Astrality account to an existing {{ .App.Config.ApplicationName }} profile. <span class="text-yellow-300">If you do so, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Minecraft launchers.</span></p>
-e
+
     <form class="flex flex-col gap-3" action="{{ .App.FrontEndURL }}/web/oidc-migrate" method="post">
       <input class="bg-neutral-800 p-2 rounded" type="text" name="username" placeholder="Username" required />
       <input hidden name="returnUrl" value="{{ .URL }}" />
