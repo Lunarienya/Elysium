@@ -5,9 +5,10 @@
 {{ define
   "content"
 }}
-<div class="flex flex-col gap-4">
+<div class="flex flex-col gap-4 md:w-1/2">
   <!-- CreateNewPlayer -->
   {{ if .App.Config.CreateNewPlayer.Allow }}
+  <div class="flex flex-col gap-2">
     <h3 class="text-2xl font-bold">Create a player</h3>
     <p>Complete registration by creating a new player:</p>
     <form class="flex flex-col gap-2" action="{{ .App.FrontEndURL }}/web/register" method="post">
@@ -27,19 +28,27 @@
       {{ end }}
       <input type="submit" value="Register" class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" />
     </form>
+  </div>
   {{ end }}
 
   {{ if .AnyUnmigratedUsers }}
+  <hr class="border-b border-b-zinc-600">
+  <div class="flex flex-col gap-2">
     <h3 class="text-2xl font-bold">Migrate an existing profile</h3>
 
-    <p>You can link your Astrality account to an existing {{ .App.Config.ApplicationName }} profile. <span class="text-yellow-300">If you do so, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Minecraft launchers.</span></p>
+    <p>
+      You can link your Astrality account to an existing {{ .App.Config.ApplicationName }} profile.
+      <br>
+      <span class="text-yellow-300">If you do so, you will no longer be able to log in using your {{ .App.Config.ApplicationName }} password. You'll need to use your Minecraft Token to log in to Minecraft launchers.</span>
+    </p>
 
-    <form class="flex flex-col gap-3" action="{{ .App.FrontEndURL }}/web/oidc-migrate" method="post">
+    <form class="flex flex-col gap-2" action="{{ .App.FrontEndURL }}/web/oidc-migrate" method="post">
       <input class="bg-neutral-800 p-2 rounded" type="text" name="username" placeholder="Username" required />
       <input hidden name="returnUrl" value="{{ .URL }}" />
       <input class="bg-neutral-800 p-2 rounded" type="password" name="password" placeholder="Password" required />
       <input type="submit" value="Link account" class="bg-violet-500 rounded px-4 py-2 text-base text-white hover:enabled:bg-primary/90 flex gap-2 items-center justify-center transition-all active:enabled:scale-[98%] disabled:opacity-50 disabled:cursor-not-allowed" />
     </form>
+  </div>
   {{ end }}
 
   <!-- ImportExistingPlayer -->
